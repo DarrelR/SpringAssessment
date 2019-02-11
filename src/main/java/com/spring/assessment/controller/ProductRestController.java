@@ -1,5 +1,7 @@
 package com.spring.assessment.controller;
 
+import com.spring.assessment.dto.ProductDto;
+import com.spring.assessment.exception.ProductNotFoundException;
 import com.spring.assessment.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +23,7 @@ public class ProductRestController {
         this.productService = productService;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "order/{id}", method = RequestMethod.GET)
     public ResponseEntity<Double> addOrder(@PathVariable("id") Integer id, @RequestParam("quantity") Integer quantity,
                                            @RequestParam("orderType") String orderType) {
         Double totalPrice = productService.calculatePrice(id, quantity, orderType);
@@ -29,6 +31,16 @@ public class ProductRestController {
             return new ResponseEntity<>(totalPrice, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<ProductDto> getProduct(@PathVariable("id") Integer id) {
+        ProductDto productDto = productService.findOne(id);
+        if (productDto != null) {
+            return new ResponseEntity<>(productDto, HttpStatus.OK);
+        } else {
+            throw new ProductNotFoundException();
         }
     }
 }

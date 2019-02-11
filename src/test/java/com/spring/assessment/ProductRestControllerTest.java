@@ -35,14 +35,17 @@ public class ProductRestControllerTest {
     @Test
     public void calculatePriceForBoxesOnly() throws Exception {
         given(productService.calculatePrice(anyInt(),anyInt(),anyString())).willReturn(20.0);
-        mockMvc.perform(MockMvcRequestBuilders.get("/rest/products/1?quantity=10&orderType=BOX"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/rest/products/order/1?quantity=10&orderType=BOX"))
                 .andExpect(status().isOk());
                 //.andExpect(jsonPath())
 
     }
 
     @Test
-    public void getProductNotFound(){
+    public void getProductNotFound() throws Exception{
         given(productService.findOne(1)).willThrow(new ProductNotFoundException());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/rest/products/1"))
+                .andExpect(status().isNotFound());
     }
 }

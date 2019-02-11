@@ -5,6 +5,8 @@ import com.spring.assessment.model.OrderType;
 import com.spring.assessment.model.Product;
 import com.spring.assessment.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,13 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductDto> findAllProducts(Pageable pageable) {
+        Page<Product> productPageList = productRepository.findAll(pageable);
+        return productPageList.map(ProductDto::new);
     }
 
     @Override
@@ -63,5 +72,25 @@ public class ProductServiceImpl implements ProductService {
             return null;
         }
         return totalPrice;
+    }
+
+    @Override
+    @Transactional
+    public ProductDto addProduct(ProductDto product) {
+        Product newProduct = new Product();
+        newProduct.setProductName(product.getProductName());
+        newProduct.setBoxPrice(product.getBoxPrice());
+        newProduct.setUnitsPerBox(product.getUnitsPerBox());
+        Double actualUnitPrice = product.getBoxPrice() / product.getUnitPrice();
+        Double unitPrice = actualUnitPrice + (30 / 100 * actualUnitPrice);
+        newProduct.setUnitPrice(unitPrice);
+        return new ProductDto(productRepository.saveAndFlush(newProduct));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductDto findByName(String productName) {
+        Product product = productRepository.findByProductName(productName);
+        return product != null ? new ProductDto(product) : null;
     }
 }

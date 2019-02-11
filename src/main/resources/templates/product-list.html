@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Product Price Calculator</title>
+    <style>
+        .search-pagination ul {
+            padding: 0;
+            list-style: none;
+            max-width: 90%;
+            margin: 20px auto 40px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .search-pagination ul
+        li {
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .search-pagination ul li a {
+            width: 40px;
+            display: block;
+            height: 40px;
+            border: 1px solid #ccc;
+            text-align: center;
+            line-height: 40px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 50%;
+        }
+
+        .search-pagination ul li.active a {
+            background: #4791d2;
+            color: white;
+        }
+    </style>
+
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/3.3.4/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/table.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+</head>
+
+<body class="hold-transition skin-red sidebar-mini">
+
+<div class="wrapper">
+    <!--/*@thymesVar id="product" type="com.assessment.spring.dto.ProductDto"*/-->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div>
+                <h1>Product List</h1>
+
+            </div>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="box">
+
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table id="products-table" class="table table-bordered table-hover dataTable">
+                            <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Box Price</th>
+                                <th>Units per Box</th>
+                                <th>Item Price</th>
+                                <th>Order Type</th>
+                                <th>Item Count</th>
+                                <th>Add</th>
+                                <th>Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${not #lists.isEmpty(productList.getContent())}"
+                                th:each="product :${productList.getContent()}">
+                                <td th:text="${product.productName}">Product 1</td>
+                                <td th:text="${product.boxPrice}">85</td>
+                                <td th:text="${product.unitsPerBox}">20</td>
+                                <td th:text="${#numbers.formatDecimal(product.unitPrice,0,'COMMA',0,'POINT')}">20</td>
+                                <td>
+                                    <select class="form-control" th:id="'orderType'+${product.id}">
+                                        <option th:each="type : ${T(com.spring.assessment.model.OrderType).values()}"
+                                                th:value="${type}"
+                                                th:text="${type}"></option>
+                                    </select>
+                                </td>
+                                <td width="150px"><input th:id="'itemQuantity'+${product.id}" class="form-control"
+                                                         type="number" placeholder="units" min="0"></td>
+                                <td>
+                                    <a th:onclick="'addOrder('+${product.id}+')'" style="cursor: pointer">ADD</a>
+                                </td>
+                                <td class="totalColumn" th:id="'totalPrice'+${product.id}">0.0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div style="float: right">
+                            <h3>Total Price : <span id="total-price-text">00.00</span></h3>
+                            <a id="calculate-total-btn" style="cursor: pointer">CALCULATE TOTAL</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-body -->
+                <div class="search-pagination" style="padding-bottom: 1px">
+                    <ul>
+                        <li th:class="${productList.isFirst()}?disabled:not(disabled)">
+                            <a th:if='${productList.isFirst()}'><i class="fa fa-angle-double-left"
+                                                                   aria-hidden="false"></i></a>
+                            <a th:if='${not productList.isFirst()}'
+                               th:href="@{${actionUrl}+'page='+${currentPage-1}}"><i
+                                    class="fa fa-angle-double-left" aria-hidden="false"></i></a></li>
+                        <th:block
+                                th:each="pageNumber: ${#numbers.sequence(1, productList.getTotalPages()==0?1:productList.getTotalPages())}"
+                                style="display: inline-block">
+                            <li th:class="${currentPage}==${pageNumber}?active:not(active)"><a
+                                    th:href="@{${actionUrl}+'page='+${pageNumber}}" th:text="${pageNumber}">1</a></li>
+                        </th:block>
+                        <li th:class="${productList.isLast()}?disabled:not(disabled)">
+                            <a th:if='${productList.isLast()}'><i class="fa fa-angle-double-right"
+                                                                  aria-hidden="true"></i></a>
+                            <a th:if='${not productList.isLast()}' th:href="@{${actionUrl}+'page='+${currentPage+1}}"><i
+                                    class="fa fa-angle-double-right"
+                                    aria-hidden="true"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer th:fragment="footer" class="main-footer">
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2019 <a>Darrel Rayen</a>.</strong> All rights reserved.
+    </footer>
+
+</div>
+<!-- ./wrapper -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="webjars/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/js/product.js}"></script>
+</body>
+</html>

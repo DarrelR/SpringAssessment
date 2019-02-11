@@ -37,7 +37,6 @@ public class ProductRestControllerTest {
         given(productService.calculatePrice(anyInt(),anyInt(),anyString())).willReturn(20.0);
         mockMvc.perform(MockMvcRequestBuilders.get("/rest/products/order/1?quantity=10&orderType=BOX"))
                 .andExpect(status().isOk());
-                //.andExpect(jsonPath())
 
     }
 

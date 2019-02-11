@@ -23,7 +23,16 @@ public class ProductRestController {
         this.productService = productService;
     }
 
-    @RequestMapping(value = "order/{id}", method = RequestMethod.GET)
+    /**
+     * This api calculates the total price of the products purchased
+     *
+     * @param id        - parameter accepts the product id of the Product Entity
+     * @param quantity  - parameter accepts the quantity of the items/boxes ordered
+     * @param orderType - parameter accepts the type of order placed by the user (Boxes/Item)
+     * @return total price of the Products ordered
+     */
+
+    @RequestMapping(value = "/order/{id}", method = RequestMethod.GET)
     public ResponseEntity<Double> addOrder(@PathVariable("id") Integer id, @RequestParam("quantity") Integer quantity,
                                            @RequestParam("orderType") String orderType) {
         Double totalPrice = productService.calculatePrice(id, quantity, orderType);
@@ -34,6 +43,12 @@ public class ProductRestController {
         }
     }
 
+    /**
+     * this api returns a Product depending on the product id
+     *
+     * @param id - parameter accepts the product id of the product
+     * @return Product entity object
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<ProductDto> getProduct(@PathVariable("id") Integer id) {
         ProductDto productDto = productService.findOne(id);

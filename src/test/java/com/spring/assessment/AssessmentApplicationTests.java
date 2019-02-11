@@ -20,8 +20,7 @@ public class AssessmentApplicationTests {
     @Test
     public void calculatePrice() {
 
-        ResponseEntity<Double> responseEntity = restTemplate.getForEntity("/rest/products", Double.class);
-
+        ResponseEntity<Double> responseEntity = restTemplate.getForEntity("/rest/products/order/1?quantity=10&orderType=BOX", Double.class);
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
